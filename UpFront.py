@@ -555,7 +555,7 @@ class RunStrings(QThread):
                         list.append(word)
                     word = ''
                     update += 1
-                if update % 3000 == 0:
+                if update % 10000 == 0:
                     self.signal2.emit(progress * bytes)
         for word in list:
             try:
@@ -567,7 +567,6 @@ class RunStrings(QThread):
                 else:
                     pass
             except TypeError as te:
-                print(str(te))
                 pass
         for item in list:
             self.signal1.emit(item)
@@ -595,7 +594,6 @@ class RunStrings(QThread):
                     pass
         self.signal2.emit(100)
         return
-
     def isBase64(self, sb):
         try:
             if isinstance(sb, str):
