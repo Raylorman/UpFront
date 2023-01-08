@@ -43,17 +43,15 @@ time_now = str(datetime.datetime.now().strftime("%d-%m-%Y %H%M%S"))
 
 
 class PeCompare(QThread):
-    signal1 = pyqtSignal('PyQt_PyObject')    # Send update to Text Browser
-    signal2 = pyqtSignal('PyQt_PyObject')    # Send Label Updates
-    signal3 = pyqtSignal('PyQt_PyObject','PyQt_PyObject')    # Send progress bar
+    signal1 = pyqtSignal('PyQt_PyObject')
+    signal2 = pyqtSignal('PyQt_PyObject')
+    signal3 = pyqtSignal('PyQt_PyObject','PyQt_PyObject')
 
     def __init__(self):
         QThread.__init__(self)
 
     def run(self):
-        # def compare(source_binary, target_binary, source_file, target_file):
         self.signal3.emit(0, "Starting")
-
         source_file = self.pe_compare_data[0]
         target_file = self.pe_compare_data[1]
         source_binary = PE.parse(source_file)
@@ -89,9 +87,9 @@ class PeCompare(QThread):
                     source_dict[s_section.name + ' Virtual Size'] = s_section.virtual_size
                     source_dict[s_section.name + ' Flags'] = s_flags
                     source_dict[s_section.name + ' Entropy'] = round(s_section.entropy, 4)
-                    source_in.seek(s_section.offset)  # Raw Address Offset
+                    source_in.seek(s_section.offset)
                     s_sha256 = hashlib.sha256()
-                    s_data = source_in.read(s_section.size)  # Raw Size
+                    s_data = source_in.read(s_section.size)
                     s_sha256.update(s_data)
                     source_dict[s_section.name + ' SHA256'] = s_sha256.hexdigest()
                     source_in.seek(s_section.offset)
@@ -112,9 +110,9 @@ class PeCompare(QThread):
                     target_dict[t_section.name + ' Virtual Size'] = t_section.virtual_size
                     target_dict[t_section.name + ' Flags'] = t_flags
                     target_dict[t_section.name + ' Entropy'] = round(t_section.entropy, 4)
-                    target_in.seek(t_section.offset)  # Raw Address Offset
+                    target_in.seek(t_section.offset)
                     t_sha256 = hashlib.sha256()
-                    t_data = source_in.read(t_section.size)  # Raw Size
+                    t_data = source_in.read(t_section.size)
                     t_sha256.update(t_data)
                     target_dict[t_section.name + ' SHA256'] = t_sha256.hexdigest()
                     target_in.seek(t_section.offset)
@@ -227,152 +225,6 @@ class PeCompare(QThread):
         self.signal3.emit(100, "Comparison Complete")
 
 
-
-
-
-
-
-
-
-
-        #
-        #
-        # source_binary = PE.parse(source_file)
-        # target_binary = PE.parse(target_file)
-        # source_file_name = os.path.basename(source_file)
-        # target_file_name = os.path.basename(target_file)
-        # source_file_name1, source_extension = os.path.splitext(source_file_name)
-        # target_file_name1, target_extension = os.path.splitext(target_file_name)
-        # source_file_size, target_file_size = os.path.getsize(source_file), os.path.getsize(target_file)
-        # source_sections, target_sections = source_binary.sections, target_binary.sections
-        # source_dict = {}
-        # target_dict = {}
-        # source_dict['File_Name'] = (source_file_name1)
-        # target_dict['File_Name'] = (target_file_name1)
-        # source_dict['Extension'] = (source_extension)
-        # target_dict['Extension'] = (target_extension)
-        # source_dict['File_Size'] = (source_file_size)
-        # target_dict['File_Size'] = (target_file_size)
-        # source_fuzzy = hash_from_file(source_file)
-        # target_fuzzy = hash_from_file(target_file)
-        # source_dict['SSDeep'] = (source_fuzzy)
-        # target_dict['SSDeep'] = (target_fuzzy)
-        # with open(source_file, 'rb') as source_in, open(target_file, 'rb') as target_in:
-        #     s_binary_header = source_in.read(32)
-        #     s_header = b2a_hex(s_binary_header).decode()
-        #     t_binary_header = target_in.read(32)
-        #     t_header = b2a_hex(t_binary_header).decode()
-        #     source_dict['First_Hex'] = (s_header)
-        #     target_dict['First_Hex'] = (t_header)
-        #     source_in.seek(0, 0)
-        #     target_in.seek(0, 0)
-        #     for s_section in source_sections:
-        #         s_flags = ""
-        #         for flag in s_section.characteristics_lists:
-        #             s_flags += str(flag).split(".")[-1] + " "
-        #         source_dict[s_section.name + ' Offset'] = s_section.offset
-        #         source_dict[s_section.name + ' Size'] = s_section.size
-        #         source_dict[s_section.name + ' Percent of File'] = round(s_section.size / source_file_size * 100, 2)
-        #         source_dict[s_section.name + ' Virtual Address'] = s_section.virtual_address
-        #         source_dict[s_section.name + ' Virtual Size'] = s_section.virtual_size
-        #         source_dict[s_section.name + ' Flags'] = s_flags
-        #         source_dict[s_section.name + ' Entropy'] = round(s_section.entropy, 4)
-        #         source_in.seek(s_section.offset)               # Raw Address Offset
-        #         s_sha256 = hashlib.sha256()
-        #         s_data = source_in.read(s_section.size)        # Raw Size
-        #         s_sha256.update(s_data)
-        #         source_dict[s_section.name + ' SHA256'] = s_sha256.hexdigest()
-        #         source_dict[s_section.name + ' SSDeep'] = hash(s_data)
-        #     for t_section in target_sections:
-        #         t_flags = ""
-        #         for flag in t_section.characteristics_lists:
-        #             t_flags += str(flag).split(".")[-1] + " "
-        #         target_dict[t_section.name + ' Offset'] = t_section.offset
-        #         target_dict[t_section.name + ' Size'] = t_section.size
-        #         target_dict[t_section.name + ' Percent of File'] = round(t_section.size / target_file_size * 100, 2)
-        #         target_dict[t_section.name + ' Virtual Address'] = t_section.virtual_address
-        #         target_dict[t_section.name + ' Virtual Size'] = t_section.virtual_size
-        #         target_dict[t_section.name + ' Flags'] = t_flags
-        #         target_dict[t_section.name + ' Entropy'] = round(t_section.entropy, 4)
-        #         target_in.seek(t_section.offset)               # Raw Address Offset
-        #         t_sha256 = hashlib.sha256()
-        #         t_data = source_in.read(t_section.size)        # Raw Size
-        #         t_sha256.update(t_data)
-        #         target_dict[t_section.name + ' SHA256'] = t_sha256.hexdigest()
-        #         target_dict[t_section.name + ' SSDeep'] = hash(t_data)
-        #     same_count = 0
-        #     similiar_count = 0
-        #     for k, v in source_dict.items():
-        #         for k2, v2 in target_dict.items():
-        #             if k == k2:
-        #                 if v == v2:
-        #                     print('--SAME')
-        #                     print(str(k) + " (" + str(v) + ")")
-        #                     print(str(k2) + " (" + str(v2) + ")")
-        #                     same_count +=1
-        #                 else:
-        #                     if 'SSDeep' in k and 'SSDeep' in k2:
-        #                         result = ppdeep.compare(v, v2)
-        #                         print('--DIFF')
-        #                         print(str(k + " (" + str(v) + ")"))
-        #                         print(str(k2 + " (" + str(v2) + ")"))
-        #                         print("SSDeep Comparison: " + str(result) + "%")
-        #                     elif type(v) == int and type(v2) == int:
-        #                         if v > v2:
-        #                             percentage = round((v - v2) * 100 / v, 3)
-        #                             if percentage <= 0.5:
-        #                                 print('--INTEGER PAIR - ' + str(percentage) + "% Difference - VERY SIMILIAR (<=0.5)")
-        #                                 print(str(k + " (" + str(v) + ")"))
-        #                                 print(str(k2 + " (" + str(v2) + ")"))
-        #                                 similiar_count += 1
-        #                             else:
-        #                                 print('--INTEGER PAIR - ' + str(percentage) + "% Difference")
-        #                                 print(str(k + " (" + str(v) + ")"))
-        #                                 print(str(k2 + " (" + str(v2) + ")"))
-        #                         else:
-        #                             percentage = round((v2 - v) * 100 / v2, 3)
-        #                             if percentage <= 0.5:
-        #                                 print('--INTEGER PAIR - ' + str(percentage) + "% Difference - VERY SIMILIAR (<=0.5)")
-        #                                 print(str(k + " (" + str(v) + ")"))
-        #                                 print(str(k2 + " (" + str(v2) + ")"))
-        #                                 similiar_count += 1
-        #                             else:
-        #                                 print('--INTEGER PAIR - ' + str(percentage) + "% Difference")
-        #                                 print(str(k + " (" + str(v) + ")"))
-        #                                 print(str(k2 + " (" + str(v2) + ")"))
-        #                     elif type(v) == float and type(v2) == float:
-        #                         if v > v2:
-        #                             percentage = round((v - v2) * 100 / v, 5)
-        #                             if percentage <= 0.1:
-        #                                 print('--FLOAT PAIR - ' + str(percentage) + "% Difference - VERY SIMILIAR (<=.1)")
-        #                                 print(str(k + " (" + str(v) + ")"))
-        #                                 similiar_count += 1
-        #                             else:
-        #                                 print('--FLOAT PAIR - ' + str(percentage) + "% Difference")
-        #                                 print(str(k + " (" + str(v) + ")"))
-        #                                 print(str(k2 + " (" + str(v2) + ")"))
-        #                         else:
-        #                             percentage = round((v2 - v) * 100 / v2, 5)
-        #                             if percentage <= 0.1:
-        #                                 print('--FLOAT PAIR - ' + str(percentage) + "% Difference - VERY SIMILIAR (<=.1)")
-        #                                 print(str(k + " (" + str(v) + ")"))
-        #                                 print(str(k2 + " (" + str(v2) + ")"))
-        #                                 similiar_count += 1
-        #                             else:
-        #                                 print('--FLOAT PAIR - ' + str(percentage) + "% Difference")
-        #                                 print(str(k + " (" + str(v) + ")"))
-        #                                 print(str(k2 + " (" + str(v2) + ")"))
-        #                     else:
-        #                         print('--DIFF')
-        #                         print(str(k + " (" + str(v) + ")"))
-        #                         print(str(k2 + " (" + str(v2) + ")"))
-        #
-        #     print('Total comparisons from Source : ' + str(len(source_dict)))
-        #     print('Total comparisons from Target : ' + str(len(target_dict)))
-        #     print('Sections that were Identical  : ' + str(same_count))
-        #     print('Sections that were Similar    : ' + str(similiar_count))
-
-
 class CreateReports(QThread):
     signal1 = pyqtSignal('PyQt_PyObject')
 
@@ -380,8 +232,6 @@ class CreateReports(QThread):
         QThread.__init__(self)
 
     def run(self):
-        # items = self.report_items
-        # print(self.report_items)
         file_name = self.report_items[0]
         file_ext = self.report_items[1]
         file_size = self.report_items[2]
@@ -397,25 +247,6 @@ class CreateReports(QThread):
         dos_header = binary.dos_header
         header = binary.header
         optional_header = binary.optional_header
-
-
-        # with open(file_path, 'rb') as in_file2:
-        #     header_string = ""
-        #     bytes = 0
-        #     line = []
-        #     filecontents = in_file2.read()
-        #     for b in filecontents:
-        #         bytes = bytes + 1
-        #         line.append(b)
-        #         if bytes == 17:
-        #             pass
-        #         else:
-        #             for b2 in line:
-        #                 if (b2 >= 32) and (b2 <= 126):
-        #                     header_string += (chr(b2))
-        #                 else:
-        #                     header_string += ("*")
-        #     print(header_string)
         fileName = out_loc + "/Upfront_Reports/UpfrontReport - " + file_name + ".pdf"
         if os.path.exists(fileName):
             print("File is already there - " + fileName)
@@ -476,9 +307,8 @@ class CreateReports(QThread):
 
 
 class GetCerts(QThread):
-    signal1 = pyqtSignal('PyQt_PyObject')  # Send VALID Cert Data
-    signal2 = pyqtSignal('PyQt_PyObject')  # Send CERT Progress
-
+    signal1 = pyqtSignal('PyQt_PyObject')
+    signal2 = pyqtSignal('PyQt_PyObject')
     def __init__(self):
         QThread.__init__(self)
 
@@ -490,9 +320,8 @@ class GetCerts(QThread):
             cursor = sqliteConnection.cursor()
         except sqlite3.Error as error:
             return
-            # print("LOG:{0:8}".format("Failed to connect with sqlite3 database - " + str(error)))
         try:
-            cursor.execute("SELECT * FROM files_to_check")  # execute a simple SQL select query
+            cursor.execute("SELECT * FROM files_to_check")
         except sqlite3.OperationalError as sqe:
             print(str(sqe))
             return
@@ -500,7 +329,7 @@ class GetCerts(QThread):
         progress = 100 / total_items
         counter = 0
         cursor.execute("SELECT * FROM files_to_check")
-        jobs = cursor.fetchall()  # get all the results from the above query
+        jobs = cursor.fetchall()
         for file in jobs:
             file_name = str(file[0])
             file_path = str(file[7])
@@ -527,33 +356,32 @@ class GetCerts(QThread):
                 self.signal1.emit(output)
                 print(str(ee))
                 pass
-
             self.signal2.emit(progress * counter)
         self.signal2.emit(100)
         cursor.close()
 
 
 class PeData(QThread):
-    signal = pyqtSignal('PyQt_PyObject')   # Clear GUI Signal
-    signal1 = pyqtSignal('PyQt_PyObject')  # Basic Info
-    signal2 = pyqtSignal('PyQt_PyObject')  # Data Directories
-    signal3 = pyqtSignal('PyQt_PyObject')  # Header
-    signal4 = pyqtSignal('PyQt_PyObject')  # Imports
-    signal5 = pyqtSignal('PyQt_PyObject')  # Relocations
-    signal6 = pyqtSignal('PyQt_PyObject')  # Sections
-    signal7 = pyqtSignal('PyQt_PyObject')  # Symbols
-    signal8 = pyqtSignal('PyQt_PyObject')  # TLS
-    signal9 = pyqtSignal('PyQt_PyObject')  # Export
-    signal10 = pyqtSignal('PyQt_PyObject')  # Debug
-    signal11 = pyqtSignal('PyQt_PyObject')  # Signature
-    signal12 = pyqtSignal('PyQt_PyObject')  # Rich Header
-    signal13 = pyqtSignal('PyQt_PyObject')  # Resources
-    signal14 = pyqtSignal('PyQt_PyObject')  # Load Configurations
-    signal15 = pyqtSignal('PyQt_PyObject')  # Constructors
-    signal16 = pyqtSignal('PyQt_PyObject')  # Functions
-    signal17 = pyqtSignal('PyQt_PyObject')  # Exceptions
-    signal18 = pyqtSignal('PyQt_PyObject')  # Delay Imports
-    signal19 = pyqtSignal('PyQt_PyObject','PyQt_PyObject')  # Progress Bar
+    signal = pyqtSignal('PyQt_PyObject')
+    signal1 = pyqtSignal('PyQt_PyObject')
+    signal2 = pyqtSignal('PyQt_PyObject')
+    signal3 = pyqtSignal('PyQt_PyObject')
+    signal4 = pyqtSignal('PyQt_PyObject')
+    signal5 = pyqtSignal('PyQt_PyObject')
+    signal6 = pyqtSignal('PyQt_PyObject')
+    signal7 = pyqtSignal('PyQt_PyObject')
+    signal8 = pyqtSignal('PyQt_PyObject')
+    signal9 = pyqtSignal('PyQt_PyObject')
+    signal10 = pyqtSignal('PyQt_PyObject')
+    signal11 = pyqtSignal('PyQt_PyObject')
+    signal12 = pyqtSignal('PyQt_PyObject')
+    signal13 = pyqtSignal('PyQt_PyObject')
+    signal14 = pyqtSignal('PyQt_PyObject')
+    signal15 = pyqtSignal('PyQt_PyObject')
+    signal16 = pyqtSignal('PyQt_PyObject')
+    signal17 = pyqtSignal('PyQt_PyObject')
+    signal18 = pyqtSignal('PyQt_PyObject')
+    signal19 = pyqtSignal('PyQt_PyObject','PyQt_PyObject')
 
     def __init__(self):
         QThread.__init__(self)
@@ -645,9 +473,8 @@ class PeData(QThread):
 
 
 class VtLookup(QThread):
-    signal1 = pyqtSignal('PyQt_PyObject')  # Update left window pane with main results
-    # signal2 = pyqtSignal('PyQt_PyObject')  # Not used
-    signal3 = pyqtSignal('PyQt_PyObject')  # Update right pane with items if it is malicious
+    signal1 = pyqtSignal('PyQt_PyObject')
+    signal3 = pyqtSignal('PyQt_PyObject')
 
     def __init__(self):
         QThread.__init__(self)
@@ -655,9 +482,7 @@ class VtLookup(QThread):
     def run(self):
         file_hash = self.vt_hash[0]
         vt_api_key = self.vt_hash[1]
-        # print("VirusTotal Thread Activated")
         self.signal1.emit("Gathering info by hash: " + file_hash)
-        # try:
         with virustotal_python.Virustotal(vt_api_key) as vtotal:
             try:
                 response = vtotal.request(f"files/{file_hash}")
@@ -695,17 +520,13 @@ class VtLookup(QThread):
             except:
                 self.signal1.emit("Your missing something here, review your API key Info")
                 self.signal1.emit("Any Unhandled Exception Occured")
-        # except:
-        #     self.signal1.emit("Invalid API Key or lookups are exhausted for this Key - API: " + vt_api_key)
-        #     self.signal1.emit("https://developers.virustotal.com/reference/overview")
-        # return
 
 
 class RunStrings(QThread):
     signal1 = pyqtSignal('PyQt_PyObject')
-    signal2 = pyqtSignal('PyQt_PyObject')  # Progress bar updated
-    signal3 = pyqtSignal('PyQt_PyObject')  # Key Strings sent
-    signal4 = pyqtSignal('PyQt_PyObject')  # send base64
+    signal2 = pyqtSignal('PyQt_PyObject')
+    signal3 = pyqtSignal('PyQt_PyObject')
+    signal4 = pyqtSignal('PyQt_PyObject')
 
     def __init__(self):
         QThread.__init__(self)
@@ -736,7 +557,6 @@ class RunStrings(QThread):
                     update += 1
                 if update % 3000 == 0:
                     self.signal2.emit(progress * bytes)
-
         for word in list:
             try:
                 base64_bytes = word.encode("ascii")
@@ -790,15 +610,15 @@ class RunStrings(QThread):
 
 
 class HashThread(QThread):
-    signal1 = pyqtSignal('PyQt_PyObject')  # Sends Scanned File Information to the full table list on GUI
-    signal2 = pyqtSignal('PyQt_PyObject')  # Sends Current File checked Value to the Progress Bar
-    signal3 = pyqtSignal('PyQt_PyObject')  # Updates lookups counts (Checked, SKipped, Errors) on Main GUI
-    signal4 = pyqtSignal('PyQt_PyObject')  # Sends Final Hash_Completed Output to GUI
-    signal5 = pyqtSignal('PyQt_PyObject')  # Keyword Found, sending data to Keyword hits table
-    signal6 = pyqtSignal('PyQt_PyObject')  # Send the count of overall lookups to check
-    signal7 = pyqtSignal('PyQt_PyObject')  # Send an Update for the Log
-    signal8 = pyqtSignal('PyQt_PyObject')  # Send File Extensions
-    signal9 = pyqtSignal('PyQt_PyObject', 'PyQt_PyObject', 'PyQt_PyObject')  # Send Registry Data
+    signal1 = pyqtSignal('PyQt_PyObject')
+    signal2 = pyqtSignal('PyQt_PyObject')
+    signal3 = pyqtSignal('PyQt_PyObject')
+    signal4 = pyqtSignal('PyQt_PyObject')
+    signal5 = pyqtSignal('PyQt_PyObject')
+    signal6 = pyqtSignal('PyQt_PyObject')
+    signal7 = pyqtSignal('PyQt_PyObject')
+    signal8 = pyqtSignal('PyQt_PyObject')
+    signal9 = pyqtSignal('PyQt_PyObject', 'PyQt_PyObject', 'PyQt_PyObject')
 
     def __init__(self):
         QThread.__init__(self)
@@ -816,26 +636,15 @@ class HashThread(QThread):
         start_date = datetime.datetime.strptime(self.dir_to_hash[5], format)
         end_date = datetime.datetime.strptime(self.dir_to_hash[6], format)
         temp_loc= "\\temp"
-        # nsrl_loc = '\\nsrl'
         data_loc = "\\data"
-        # logs_loc = "\\data\\logs"
         try:
             os.mkdir(report_loc + temp_loc)
         except FileExistsError:
-            pass # self.signal7.emit("LOG\t:  Path Exists - " + (report_loc))
-        # try:
-        #     os.mkdir(report_loc + nsrl_loc)
-        # except FileExistsError:
-        #     pass # self.signal7.emit("LOG\t:  Path Exists - " + (report_loc))
+            pass
         try:
             os.mkdir(report_loc + data_loc)
         except FileExistsError:
-            pass # self.signal7.emit("LOG\t:  Path Exists - " + (report_loc))
-        # try:
-        #     os.mkdir(report_loc + logs_loc)
-        # except FileExistsError:
-        #     pass # self.signal7.emit("LOG\t:  Path Exists - " + (report_loc))
-
+            pass
         report_path = report_loc + "\\Data\\" + "4d5a Report (" + time_now + ").csv"
         db_path = report_loc + "\\Data\\" + "file_checks (" + time_now + ").db"
         start_time = time.time()
@@ -858,7 +667,6 @@ class HashThread(QThread):
         text_out = "Counting Files and creating temp files for Target Directory"
         self.signal7.emit("{0:<12}{1}".format(log, text_out))
         ext_counts = {}
-        # try:
         if os.path.isfile(report_loc + "\\temp\\DONT_MODIFY.temp") == True:
             os.remove(report_loc + "\\temp\\DONT_MODIFY.temp")
         else:
@@ -878,13 +686,8 @@ class HashThread(QThread):
                         starter_count += 1
                     except UnicodeEncodeError as ue:
                         pass
-                        # print("Unicode ERROR with filepath: " + str(ue))
-                        # print(file_path)
                     except AttributeError as ae:
                         pass
-                        # print("Attribute ERROR with filepath: " + str(ae))
-                        # print(file_path)
-
                     reg_files = []
                     if file_name1 == "SOFTWARE" or file_name1=="SYSTEM" or file_name1=="SAM"\
                             or file_name1=="SECURITY" or file_name1=="ntuser.dat":
@@ -905,7 +708,6 @@ class HashThread(QThread):
                         pass
                     if "SYSTEM" in reg_files:
                         try:
-                            # self.signal9.emit("---- Current Control Set - SYSTEM Registry")
                             target = report_loc + '\\temp\\registry\\SYSTEM'
                             key = self.pull_key(target, 'Select')
                             self.signal9.emit("Current ControlSet", str(key['Current']), 'SYSTEM>Select')
@@ -915,7 +717,6 @@ class HashThread(QThread):
                             print("An Error Occured on SYSTEM File " + str(ee))
 
                         try:
-                            # self.signal9.emit("---- Time Zone Info - SYSTEM Registry")
                             tz_loc = "ControlSet001\\Control\\TimeZoneInformation"
                             key = self.pull_key(target, tz_loc)
                             self.signal9.emit("Time Zone Setting", str(key['TimeZoneKeyName']), "SYSTEM>"+tz_loc)
@@ -925,7 +726,6 @@ class HashThread(QThread):
                             print("An Error Occured on SYSTEM File " + str(ee))
 
                         try:
-                            # self.signal9.emit("---- Firewall Settings - SYSTEM Registry")
                             fw_dom = "ControlSet001\\Services\\SharedAccess\\Parameters\\FirewallPolicy\DomainProfile"
                             fw_stan = "ControlSet001\\Services\\SharedAccess\\Parameters\\FirewallPolicy\StandardProfile"
                             key1 = self.pull_key(target, fw_dom)
@@ -936,7 +736,6 @@ class HashThread(QThread):
                             print("An Error Occured on SYSTEM File " + str(ee))
 
                         try:
-                            # self.signal9.emit("---- System Architecture  - SYSTEM Registry")
                             registry = Registry.Registry(target)
                             sys_arch = "ControlSet001\\Control\\Session Manager\\Environment"
                             key = registry.open(sys_arch)
@@ -951,27 +750,6 @@ class HashThread(QThread):
                                     self.signal9.emit("Number of Processors",  str(v.value()), "SYSTEM>"+sys_arch)
                         except Exception as ee:
                             print("An Error Occured on SYSTTEM File " + str(ee))
-
-                        #     # self.signal9.emit("\n---- Last Shutdown  - SYSTEM Registry)
-                        #     # registry = Registry.Registry(target)
-                        #     key = registry.open("ControlSet001\\Control\\Windows")
-                        #     for v in key.values():
-                        #         if v.name() == 'ShutdownTime':
-                        #             a = (str(hexlify(v.value())))
-                        #             b = (a.replace("'", ""))
-                        #             c = (b[1:])
-                        #             ba = bytearray.fromhex(c)
-                        #             ba.reverse()
-                        #             joins = ''.join(format(x, '02x') for x in ba)
-                        #             super = str(joins.upper())
-                        #             def getFiletime(dt):
-                        #                 microseconds = int(dt, 16) / 10
-                        #                 seconds, microseconds = divmod(microseconds, 1000000)
-                        #                 days, seconds = divmod(seconds, 86400)
-                        #                 return datetime.datetime(1601, 1, 1) + datetime.timedelta(days, seconds, microseconds)
-                        #             converted = (format(getFiletime(super), '%a, %d %B %Y - %H:%M:%S %Z'))
-                        #             self.signal9.emit(format_str.format("Last Shutdown time: ", converted + " System Time"))
-
                     if "SOFTWARE" in reg_files:
                         try:
                             target = report_loc + '\\temp\\registry\\SOFTWARE'
@@ -1060,7 +838,6 @@ class HashThread(QThread):
                             c_time = datetime.datetime.fromtimestamp(os.path.getctime(file_path))
                             if (m_time > start_date and m_time < end_date) or \
                                     (c_time > start_date and c_time < end_date):
-                                    # (a_time > start_date and a_time < end_date) or\
                                 with open(file_path, 'rb') as in_file:
                                     binary_header = in_file.read(2)
                                     file_header = b2a_hex(binary_header).decode()
@@ -1079,7 +856,6 @@ class HashThread(QThread):
                                                 error_count) + D + str(other_count))
                                         except sqlite3.Error as error:
                                             return
-                                            # print(str(error))
                                     else:
                                         skip_count += 1
                                         value_progress += 1
@@ -1107,8 +883,6 @@ class HashThread(QThread):
                 self.signal2.emit(value_progress)
                 self.signal3.emit(str(header_match) + D + str(skip_count) + D + str(error_count) + D + str(other_count))
             f.close()
-        # os.remove(report_loc + "\\temp\\files" + str(time_now) + ".temp")
-
         self.signal2.emit(value_progress)
         self.signal3.emit(str(header_match) + D + str(skip_count) + D + str(error_count) + D + str(other_count))
         text_out = "Files Checked Total " + str(value_progress)
@@ -1120,8 +894,8 @@ class HashThread(QThread):
         text_out = "Starting Hashing Functions..."
         self.signal7.emit("{0:<12}{1}".format(log, text_out))
 
-        cursor.execute("SELECT * FROM files_to_check")  # execute a simple SQL select query
-        jobs = cursor.fetchall()  # get all the results from the above query
+        cursor.execute("SELECT * FROM files_to_check")
+        jobs = cursor.fetchall()
         to_proceess = len(jobs)
         self.signal6.emit(len(jobs))
         value_progress = 0
@@ -1153,16 +927,6 @@ class HashThread(QThread):
                             sha1.update(data)
                         md5_hash = md5.hexdigest()
                         sha1_hash = sha1.hexdigest()
-                    # with open(good_loc + sha1_hash[0:2] + "\\" + sha1_hash[0:2] + ".txt", 'r') as look_file:
-                    #     for line in look_file.readlines():
-                    #         if sha1_hash.lower() == line.lower().rstrip():
-                    #             go = 0
-                    #             nsrl_skip += 1
-                    #             print("SKIP ** NSRL HIT FOUND - " + sha1_hash.lower() + " - " + file_path)
-                    #             pass
-                    #         else:
-                    #             go = 1
-                    # if go == 1:
                         try:
                             File_information = GetFileVersionInfo(file_path, "\\")
                             ms_file_version = File_information['FileVersionMS']
@@ -1171,7 +935,6 @@ class HashThread(QThread):
                                       str(HIWORD(ls_file_version)), str(LOWORD(ls_file_version))]
                             file_ver = str(".".join(output))
                         except:
-                            # print("Error on Version Number Try - File Number: " + str(value_progress))
                             pass
                         try:
                             cursor.execute("""
@@ -1180,7 +943,6 @@ class HashThread(QThread):
                             sqliteConnection.commit()
                         except sqlite3.Error as sqlE:
                             return
-                            # print(str(sqlE))
                         stat_update = str(file_name +
                                           D + str(file_ext) +
                                           D + str(file_size) +
@@ -1192,7 +954,6 @@ class HashThread(QThread):
                                           D + md5_hash +
                                           D + sha1_hash)
                         self.signal1.emit(stat_update)
-                        # "FileName,Extension,FileSize,CreatedTime,ModifiedTime,LastAccessed,Version,FilePath,MD5,SHA1
                         report_out.write(file_name +
                                           ',' + file_ext +
                                           ',' + str(file_size) +
@@ -1240,46 +1001,16 @@ class HashThread(QThread):
                                 if rat.lower() in file_name.lower():
                                     self.signal5.emit(str(stat_update) + "::RAT Name")
                                     hits_list.append(str(file_path.lower()))
-                        # print(hits_list)
                         value_progress += 1
                         self.signal2.emit(float(value_progress))
                 else:
-                    # print("File path not found : " + str(file_path))
                     value_progress += 1
                     self.signal2.emit(value_progress)
-
-
-        # for hive in registry_paths:
-        #     path = target_drive_letter + hive
-        #     try:
-        #         if os.path.isfile(path):
-        #             shutil.copy(target_drive_letter + hive, report_loc + "\\Data\\Registry\\")
-        #             print("Registry File Found -" + str(file_path))
-        #             print("File Copied to " + report_loc + "\\Data\\Registry\\")
-        #             """
-        #             MAYBE DO SOME MORE WITH THE REGISTRY FILES HERE
-        #             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        #             """
-        #         else:
-        #             print("REGISTRY - DOES NOT EXIST : " + path)
-        #     except PermissionError as pe:
-        #         print("Permission Error, OS is currently using or has locked : " + path)
-        #         pass
-
         self.signal2.emit(value_progress)
 
         text_out = "Hashing Completed - Database is Updated"
         self.signal7.emit("{0:<12}{1}".format(log, text_out))
-
-        # output_hl = '<a href="{}">CSV_Report</a>'.format(report_loc + "/data/")
-        # text_out = ("CSV Report created: " + output_hl)
         self.signal7.emit("LOG:        " + '<a href="{}">CSV Report Location</a>'.format(report_loc + "/data/"))
-
-        # self.signal7.emit
-
-
-        # log = "NSRL Items Skipped  " + (str(nsrl_skip))
-        # self.signal7.emit("LOG:{0:8}".format(log))
         execution_time = (time.time() - start_time) / 60
         self.signal4.emit("SCRIPT COMPLETED: " +
                           D + str(header_match) +
@@ -1387,9 +1118,8 @@ class UI(QMainWindow):
         self.report_thread.signal1.connect(self.report_stuff)
         self.pushButton_vtLookup.clicked.connect(self.run_vt)
         self.vt_thread = VtLookup()
-        self.vt_thread.signal1.connect(self.output_vt)     # Update left table, main info
-        self.vt_thread.signal3.connect(self.output2_vt)    # Update right table, extra info
-
+        self.vt_thread.signal1.connect(self.output_vt)
+        self.vt_thread.signal3.connect(self.output2_vt)
         self.pushButton_peTarget.clicked.connect(self.get_file)
         self.pushButton_peSource.clicked.connect(self.get_file)
         self.pushButton_peCompare.clicked.connect(self.run_pe_compare)
@@ -1397,8 +1127,6 @@ class UI(QMainWindow):
         self.pe_compare_thread.signal1.connect(self.output_pe_comp)
         self.pe_compare_thread.signal2.connect(self.output_pe_labels)
         self.pe_compare_thread.signal3.connect(self.output_pe_progress)
-
-
         self.progressBar = QProgressBar()
         self.statusBar().addPermanentWidget(self.progressBar)
         self.progressBar.setGeometry(0, 1, 450, 10)
@@ -1424,7 +1152,6 @@ class UI(QMainWindow):
         self.btn_change_sel = {'pushButton_details': {self.pushButton_details: 0},
                                'pushButton_exe': {self.pushButton_exe: 1},
                                'pushButton_help': {self.pushButton_help: 2}}
-
         self.btn_change_sel2 = {'pushButton_strings': {self.pushButton_strings: 0},
                                 'pushButton_keywords': {self.pushButton_keywords: 1},
                                 'pushButton_osint': {self.pushButton_osint: 2},
@@ -1450,7 +1177,6 @@ class UI(QMainWindow):
         self.show()
 
     def darkmode(self):
-        # self.setStyleSheet(qdarktheme.setup_theme("dark"))
         self.setStyleSheet(qdarktheme.load_stylesheet("dark"))
         self.textBrowser_vt.setFont(QFont('Consolas', 12))
         self.textBrowser_vt2.setFont(QFont('Consolas', 12))
@@ -1474,7 +1200,6 @@ class UI(QMainWindow):
         self.textBrowser_function.setFont(QFont('Consolas', 12))
 
     def lightmode(self):
-        # self.setStyleSheet(qdarktheme.setup_theme("light"))
         self.setStyleSheet(qdarktheme.load_stylesheet("light"))
         self.textBrowser_vt.setFont(QFont('Consolas', 12))
         self.textBrowser_vt2.setFont(QFont('Consolas', 12))
@@ -1532,7 +1257,6 @@ class UI(QMainWindow):
         self.label_similiar.setText("Similiar: " + str(sim_count))
         self.label_compare.setStyleSheet("background-color: lightgreen")
 
-
     def re_check(self):
         re_sample = self.lineEdit_re.text()
         if re_sample == "":
@@ -1558,9 +1282,6 @@ class UI(QMainWindow):
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.tableWidget:
             menu = QMenu()
-            # menu.addAction("Lookup on VT")
-            # menu.addAction("Run Strings")
-            # menu.addAction("PE Data")
             menu.addAction("Export File and Report")
             if menu.exec_(event.globalPos()):
                 item = source.itemAt(event.pos())
@@ -1615,8 +1336,8 @@ class UI(QMainWindow):
         row = self.tableWidget_2.currentRow()
         sha_check = self.tableWidget_2.item(row, 10).text()
         items = self.tableWidget.findItems(sha_check, Qt.MatchContains)
-        if items:  # we have found something
-            item = items[0]  # take the first
+        if items:
+            item = items[0]
             self.tableWidget.setCurrentItem(item)
             row = self.tableWidget.currentRow()
             self.tableWidget.setCurrentItem(self.tableWidget.item(row, 0))
@@ -1625,8 +1346,8 @@ class UI(QMainWindow):
         row = self.tableWidget_certs.currentRow()
         sha_check = self.tableWidget_certs.item(row, 5).text()
         items = self.tableWidget.findItems(sha_check, Qt.MatchContains)
-        if items:  # we have found something
-            item = items[0]  # take the first
+        if items:
+            item = items[0]
             self.tableWidget.setCurrentItem(item)
             row = self.tableWidget.currentRow()
             self.tableWidget.setCurrentItem(self.tableWidget.item(row, 0))
@@ -1664,12 +1385,10 @@ class UI(QMainWindow):
     def run_get_certs(self):
         output = self.lineEdit_output.text()
         try:
-            # self.tableWidget_certs.clear()
             self.certs_thread.certs_data = output
             self.certs_thread.start()
         except AttributeError as ae:
             pass
-            # print(str(ae) + " -- ERROR")
         self.pushButton_cert_start.setEnabled(False)
 
     def cert_update(self, result):
@@ -1695,7 +1414,6 @@ class UI(QMainWindow):
 
     def run_pe_data(self):
         try:
-            # self.textBrowser_file_sig.clear()
             row = self.tableWidget.currentRow()
             file_path = self.tableWidget.item(row, 7).text()
             file_sha1 = self.tableWidget.item(row, 9).text()
@@ -1711,8 +1429,6 @@ class UI(QMainWindow):
         except Exception as ee:
             print(str(ee))
             pass
-            # print(str(ae) + " -- ERROR")
-        # self.pushButton_getStrings.setEnabled(False)
 
     def output_pe_data(self, result):
         if result == "GO":
@@ -1792,10 +1508,8 @@ class UI(QMainWindow):
                 file_sha1 = self.tableWidget.item(row, 9).text().rstrip()
                 api = self.lineEdit_api_key.text().lower().rstrip()
                 self.vt_thread.vt_hash = file_sha1, api
-                # print("BOUT TO START THREAD: " + file_sha1 + "  -  " + api)
                 self.vt_thread.start()
             except AttributeError as a:
-                # print(str(a))
                 QMessageBox.information(self, "Woah...", "You need to select a file in the 4d5a Table first")
                 return
 
@@ -1861,7 +1575,7 @@ class UI(QMainWindow):
 
     def get_dir(self, button_name):
         sender = self.sender()
-        directory = QFileDialog.getExistingDirectory(self, "Select a directory", "")  #
+        directory = QFileDialog.getExistingDirectory(self, "Select a directory", "")
         if directory == "":
             QMessageBox.information(self, "Warning-", "You did not select a Directory ...")
             return
@@ -1881,7 +1595,6 @@ class UI(QMainWindow):
                         self.pushButton_start.setEnabled(True)
                 else:
                     pass
-                    # print("Directory Find error here somewhere....")
             else:self.textBrowser_status.append("ERROR: Your selected location does not appear to exist: " + directory)
 
     def get_file(self, button_name):
@@ -1926,7 +1639,7 @@ class UI(QMainWindow):
         start_time = self.dateTimeEdit_start.dateTime().toString("dd-MM-yyyy hh:mm:ss.zz")
         end_time = self.dateTimeEdit_end.dateTime().toString("dd-MM-yyyy hh:mm:ss.zz")
         if min_size == "":
-            min_size == str(2048) # 2 KB
+            min_size == str(2048)
             self.textBrowser_status.append("No Min Size, Setting to Default: "+ str(min_size))
         else:
             try:
@@ -1935,7 +1648,7 @@ class UI(QMainWindow):
                 self.textBrowser_status.append("***Minimum Size is not a number: " + str(min_size))
                 return
         if max_size == "":
-            max_size == str(102400000) # 100 MB
+            max_size == str(102400000)
             self.textBrowser_status.append("No Max Size, Setting to Default: " + str(max_size))
         else:
             try:
@@ -2004,7 +1717,6 @@ class UI(QMainWindow):
         self.tableWidget.setItem(rowPosition, 7, QTableWidgetItem(file_path))
         self.tableWidget.setItem(rowPosition, 8, QTableWidgetItem(file_md5))
         self.tableWidget.setItem(rowPosition, 9, QTableWidgetItem(file_sha1))
-        # self.tableWidget.resizeColumnsToContents()
         self.tableWidget.scrollToBottom()
 
     def update_counts(self, results):
@@ -2026,7 +1738,6 @@ class UI(QMainWindow):
 
     def log_status(self, text):
         self.textBrowser_status.append(str(text))
-        # self.textBrowser_status.scrollToBottom()
 
     def ext_status(self, output):
         extension = output[0]
@@ -2037,7 +1748,6 @@ class UI(QMainWindow):
         self.listWidget_stats.addItem(item)
 
     def completed(self, results):
-        # self.textBrowser_status.clear()
         some_text = results.split(D)[0]
         match_count = results.split(D)[1]
         skip_counts = results.split(D)[2]
@@ -2056,10 +1766,8 @@ class UI(QMainWindow):
         self.treeView.setEnabled(True)
         self.model1.setRootPath(directory)
         self.treeView.setRootIndex(self.model1.index(directory))
-        # self.pushButton_start.setEnabled(True)
 
     def match_found(self, result):
-        # print("MATCH FOUND + " + str(result))
         file_name = result.split(D)[0]
         file_ext = result.split(D)[1]
         file_size = result.split(D)[2]
@@ -2097,9 +1805,6 @@ class UI(QMainWindow):
                 'splitter_2': self.splitter_2.saveState(),
                 'splitter_3': self.splitter_3.saveState(),
             }
-            # Write window size and position to config file
-            # self.settings.setValue("size", self.size())
-            # self.settings.setValue("pos", self.pos())
             for i, j in settings_save.items():
                 self.settings.setValue(i, j)
             self.settings.sync()
